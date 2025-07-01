@@ -1,28 +1,21 @@
-// db.js
-require('dotenv').config(); // Load environment variables from .env file
-const { Pool } = require('pg'); // Import the Pool class from the pg module
+const { Pool } = require('pg');
 
-// Create a new Pool instance using environment variables
-// This pool will manage connections to your PostgreSQL database
+// Check if we are in a production environment
+const isProduction = process.env.NODE_ENV === 'production';
+
+// The connection string for the database
+// In production (on Render), process.env.DATABASE_URL will be provided.
+// Locally, it can fallback to a local connection string or separate env variables.
+// For simplicity, for local development you can still use a .env file or hardcode for dev.
+// Here, we assume DATABASE_URL will be provided by Render, and if not,
+// you might have PGUSER, PGPASSWORD etc. in your local .env or hardcoded.
+// For this guide, let's ensure it uses DATABASE_URL in production.
+const connectionString = process.env.DATABASE_URL;
+
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT, // Ensure this matches your PostgreSQL instance (e.g., 5434)
+  connectionString: connectionString,
+  // Render requires SSL for external connections
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 });
 
-// Optional: Add an event listener to confirm successful connection when a client is acquired
-pool.on('connect', () => {
-  console.log('Pool: Connected to the PostgreSQL database!');
-});
-
-// Optional: Add an event listener for any errors on idle clients in the pool
-pool.on('error', (err, client) => {
-  console.error('Pool: Unexpected error on idle client', err);
-  // It's good practice to log the error, but crashing the process here might be too aggressive
-  // process.exit(-1); // Only uncomment this if you want the app to crash on unexpected DB errors
-});
-
-// Export the pool so it can be used in other files (like server.js)
 module.exports = pool;
