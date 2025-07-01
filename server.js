@@ -13,7 +13,7 @@ const app = express(); // Create an Express application instance
 
 // Middleware - IMPORTANT: These must come BEFORE your routes
 app.use(cors({
-    origin: '*' // Temporarily allows requests from any origin
+    origin: ['http://localhost:3000', 'https://your-netlify-site.netlify.app']
 }));
 app.use(express.json()); // Allows us to parse JSON bodies from incoming requests
 
