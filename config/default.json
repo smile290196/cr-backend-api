@@ -1,0 +1,3 @@
+{
+  "jwtSecret": "your_very_secret_jwt_key_here_make_it_long_and_random_!@#$"
+}
